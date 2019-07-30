@@ -4,6 +4,12 @@ defmodule IslandsEngine.Island do
   @enforce_keys [:coordinates, :hit_coordinates]
   defstruct [:coordinates, :hit_coordinates]
 
+  @type t :: %Island{
+    coordinates: MapSet.t(),
+    hit_coordinates: MapSet.t()
+  }
+
+  @spec new(atom, Coordinate.t()) :: t() | {:error, atom()}
   def new(type, %Coordinate{} = upper_left) do
     with [_ | _] = offsets <- offsets(type),
          %MapSet{} = coordinates <- add_coordinates(offsets, upper_left) do
@@ -13,6 +19,7 @@ defmodule IslandsEngine.Island do
     end
   end
 
+  @spec add_coordinates([tuple()], Coordinate.t()) :: %MapSet{} | {:error, atom()}
   defp add_coordinates(offsets, upper_left) do
     offsets
     |> Enum.reduce_while(MapSet.new(), fn offset, acc ->
@@ -20,6 +27,7 @@ defmodule IslandsEngine.Island do
     end)
   end
 
+  @spec add_coordinate(MapSet.t(), Coordinate.t(), {integer, integer}) :: {:cont, MapSet.t()} | {:halt, {:error, atom()}}
   defp add_coordinate(coordinates, %Coordinate{row: row, col: col}, {row_offset, col_offset}) do
     case Coordinate.new(row + row_offset, col + col_offset) do
       {:ok, coordinate} ->
@@ -30,6 +38,7 @@ defmodule IslandsEngine.Island do
     end
   end
 
+  @spec offsets(atom) :: [tuple()]
   defp offsets(:square), do: [{0, 0}, {0, 1}, {1, 0}, {1, 1}]
   defp offsets(:atoll), do: [{0, 0}, {0, 1}, {1, 1}, {2, 0}, {2, 1}]
   defp offsets(:dot), do: [{0, 0}]
