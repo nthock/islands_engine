@@ -5,9 +5,9 @@ defmodule IslandsEngine.Island do
   defstruct [:coordinates, :hit_coordinates]
 
   @type t :: %Island{
-    coordinates: MapSet.t(),
-    hit_coordinates: MapSet.t()
-  }
+          coordinates: MapSet.t(),
+          hit_coordinates: MapSet.t()
+        }
 
   @spec new(atom, Coordinate.t()) :: t() | {:error, atom()}
   def new(type, %Coordinate{} = upper_left) do
@@ -19,6 +19,11 @@ defmodule IslandsEngine.Island do
     end
   end
 
+  @spec overlap?(t(), t()) :: boolean
+  def overlap?(existing_island, new_island) do
+    not MapSet.disjoint?(existing_island.coordinates, new_island.coordinates)
+  end
+
   @spec add_coordinates([tuple()], Coordinate.t()) :: %MapSet{} | {:error, atom()}
   defp add_coordinates(offsets, upper_left) do
     offsets
@@ -27,7 +32,8 @@ defmodule IslandsEngine.Island do
     end)
   end
 
-  @spec add_coordinate(MapSet.t(), Coordinate.t(), {integer, integer}) :: {:cont, MapSet.t()} | {:halt, {:error, atom()}}
+  @spec add_coordinate(MapSet.t(), Coordinate.t(), {integer, integer}) ::
+          {:cont, MapSet.t()} | {:halt, {:error, atom()}}
   defp add_coordinate(coordinates, %Coordinate{row: row, col: col}, {row_offset, col_offset}) do
     case Coordinate.new(row + row_offset, col + col_offset) do
       {:ok, coordinate} ->
