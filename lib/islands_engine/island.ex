@@ -19,8 +19,8 @@ defmodule IslandsEngine.Island do
     end
   end
 
-  @spec overlap?(t(), t()) :: boolean
-  def overlap?(existing_island, new_island) do
+  @spec overlaps?(t(), t()) :: boolean
+  def overlaps?(existing_island, new_island) do
     not MapSet.disjoint?(existing_island.coordinates, new_island.coordinates)
   end
 
