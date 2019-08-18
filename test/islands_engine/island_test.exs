@@ -48,4 +48,42 @@ defmodule IslandsEngine.IslandTest do
       refute Island.overlap?(dot, l_shape)
     end
   end
+
+  describe "guess/2" do
+    test "should return the island if correctly guess the coordinate" do
+      {:ok, dot_coordinate} = Coordinate.new(4, 4)
+      {:ok, dot} = Island.new(:dot, dot_coordinate)
+
+      {:ok, new_coordinate} = Coordinate.new(4, 4)
+      assert {:hit, result} = Island.guess(dot, new_coordinate)
+      assert new_coordinate in result.hit_coordinates
+    end
+
+    test "should return miss if incorrectly guess the coordinate" do
+      {:ok, dot_coordinate} = Coordinate.new(4, 4)
+      {:ok, dot} = Island.new(:dot, dot_coordinate)
+
+      {:ok, new_coordinate} = Coordinate.new(2, 2)
+      assert :miss = Island.guess(dot, new_coordinate)
+    end
+  end
+
+  describe "forested?/1" do
+    test "should return true if the island is forested" do
+      {:ok, dot_coordinate} = Coordinate.new(4, 4)
+      {:ok, dot} = Island.new(:dot, dot_coordinate)
+
+      {:ok, new_coordinate} = Coordinate.new(4, 4)
+      {:hit, result} = Island.guess(dot, new_coordinate)
+
+      assert Island.forested?(result)
+    end
+
+    test "should return false if the island is not forested?" do
+      {:ok, dot_coordinate} = Coordinate.new(4, 4)
+      {:ok, dot} = Island.new(:dot, dot_coordinate)
+
+      refute Island.forested?(dot)
+    end
+  end
 end

@@ -24,6 +24,27 @@ defmodule IslandsEngine.Island do
     not MapSet.disjoint?(existing_island.coordinates, new_island.coordinates)
   end
 
+  @spec guess(t(), Coordinate.t()) :: :miss | {:hit, t()}
+  def guess(island, coordinate) do
+    case MapSet.member?(island.coordinates, coordinate) do
+      true ->
+        hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
+        {:hit, %{island | hit_coordinates: hit_coordinates}}
+      false ->
+        :miss
+    end
+  end
+
+  @spec forested?(t()) :: boolean()
+  def forested?(island) do
+    MapSet.equal?(island.coordinates, island.hit_coordinates)
+  end
+
+  @spec types() :: list(atom)
+  def types() do
+    [:atoll, :dot, :l_shape, :s_shape, :square]
+  end
+
   @spec add_coordinates([tuple()], Coordinate.t()) :: %MapSet{} | {:error, atom()}
   defp add_coordinates(offsets, upper_left) do
     offsets
